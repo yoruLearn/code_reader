@@ -1,0 +1,80 @@
+[build-system]
+requires = ["setuptools>=75", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "code-reader"
+version = "0.1.0"
+description = "Console-first code reading tutor with repo briefing, evidence-based Q&A, and middleware deep dives."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{ name = "yoruLearn", email = "2147140881@qq.com" }]
+dependencies = [
+  "openai>=1.50,<3",
+  "prompt-toolkit>=3.0,<4",
+  "rich>=13.9,<15",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3,<10",
+  "pytest-cov>=6,<8",
+  "ruff>=0.8,<1",
+  "mypy>=1.13,<2",
+]
+
+[project.scripts]
+code-reader = "code_reader.cli:main"
+
+[project.urls]
+Repository = "https://github.com/yoruLearn/code_reader"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+addopts = "-ra --strict-markers --strict-config"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = [".venv"]
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "N", "UP", "B", "C4", "SIM", "ASYNC", "RUF", "S", "ANN", "ARG", "T20"]
+ignore = [
+  "ANN401",
+  "RUF001",
+  "RUF002",
+  "RUF003",
+  "T201",  # CLI intentionally prints
+  "E501",  # long Chinese prompt/tool strings are more readable unwrapped
+  "S603",  # subprocess is used only for fixed git/test commands, never shell=True
+  "S607",  # git may be resolved from PATH
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "ANN", "ARG", "S105", "S106", "PLR2004"]
+
+[tool.mypy]
+python_version = "3.11"
+mypy_path = "src"
+packages = ["code_reader"]
+strict = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+no_implicit_reexport = true
+show_error_codes = true
+
+[[tool.mypy.overrides]]
+module = ["openai.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+disallow_untyped_defs = false
+strict = false
+ignore_errors = true
